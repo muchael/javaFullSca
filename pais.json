@@ -1,0 +1,22 @@
+{
+    "entities": [
+        {
+            "package" : "br.com.teste.domain.entity",
+            "entityName": "Pais",
+            "tableName": "TESTE_PAIS",
+            "attributes": [
+                { 
+                    "name": "nome",
+                    "type": "String",
+                    "notNull": true
+                },
+                { 
+                    "name": "codigo",
+                    "type": "Integer",
+                    "notNull": true
+                }
+            ]
+
+        }
+    ]
+}
