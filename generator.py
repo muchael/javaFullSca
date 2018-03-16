@@ -40,7 +40,7 @@ def generateEntity( entity ):
     print entity
     with open( 'template/entity.java', 'r' ) as file:
 
-        resultFile = open('generated/entityParsed.java', 'w')
+        resultFile = open('generated/' + entity['entityName'] + '.java', 'w')
         for line in file:
             match = re.search(r"\{\w+\}", line);
             if match:
@@ -55,6 +55,21 @@ def generateEntity( entity ):
 
         resultFile.close()
 
+def generateRepository( entity ):
+
+    with open( 'template/repository.java', 'r' ) as file:
+
+        resultFile = open('generated/I' + entity['entityName'] + 'Repository.java', 'w')
+        for line in file:
+            match = re.search(r"\{\w+\}", line);
+            if match:
+                attribute = match.group(0)[1:-1]
+
+                resultFile.write( line.format( **entity ) )
+            else:
+                resultFile.write(line)
+
+        resultFile.close()
 
 def main():
     if len(sys.argv) < 2:
@@ -62,6 +77,9 @@ def main():
         return
 
     readConf( sys.argv[1] )
-    generateEntity( config['entities'][0] )
+
+    for entity in config['entities']:
+        generateEntity( entity )
+        generateRepository( entity )
 
 main()
