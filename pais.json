@@ -8,12 +8,14 @@
                 { 
                     "name": "nome",
                     "type": "String",
-                    "notNull": true
+                    "notNull": true,
+                    "filter": true
                 },
                 { 
                     "name": "codigo",
                     "type": "Integer",
-                    "notNull": true
+                    "notNull": true,
+                    "filter": false
                 }
             ]
 
@@ -26,12 +28,14 @@
                 { 
                     "name": "nome",
                     "type": "String",
-                    "notNull": true
+                    "notNull": true,
+                    "filter": true
                 },
                 { 
                     "name": "codigo",
                     "type": "Integer",
-                    "notNull": true
+                    "notNull": true,
+                    "filter": true
                 }
             ]
 

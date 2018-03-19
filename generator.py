@@ -55,17 +55,38 @@ def generateEntity( entity ):
 
         resultFile.close()
 
+def generateRepositoryFields( entity ):
+    result = ''
+
+    for atribute in entity['attributes']:
+        if atribute['filter']:
+            result += "\t\t\t\t\"(FILTER(" + entity['entityNameLowerCamelCase'] + '.' + atribute['name'] + ", :filter) = TRUE) \" + \n"
+
+    if len(result) > 0:
+        return result[0: -4] + '\n'
+    
+    return result
+
+
 def generateRepository( entity ):
 
     with open( 'template/repository.java', 'r' ) as file:
 
         resultFile = open('generated/I' + entity['entityName'] + 'Repository.java', 'w')
+
+        entityNameLowerCamelCase = entity['entityName'][0].lower() + entity['entityName'][1:]
+
+        entity['entityNameLowerCamelCase'] = entityNameLowerCamelCase
+
         for line in file:
             match = re.search(r"\{\w+\}", line);
             if match:
                 attribute = match.group(0)[1:-1]
 
-                resultFile.write( line.format( **entity ) )
+                if attribute == 'attributes':
+                    resultFile.write( generateRepositoryFields( entity ) )
+                else:
+                    resultFile.write( line.format( **entity ) )
             else:
                 resultFile.write(line)
 

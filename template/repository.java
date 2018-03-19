@@ -11,9 +11,9 @@ import {package}.{entityName};
 public interface I{entityName}Repository extends JpaRepository<{entityName}, Long>
 {
 	
-	@Query(value= "FROM {entityName} estado " +
-				  "WHERE ( (FILTER(estado.nome, :filter) = TRUE) "
-							  + "OR ( :filter IS NULL ) )" )
+	@Query(value= "FROM {entityName} {entityNameLowerCamelCase} WHERE " +
+			// {attributes}
+	)
 	public Page<{entityName}> listByFilters(@Param("filter") String filter, 
 												   Pageable pageable);
 
