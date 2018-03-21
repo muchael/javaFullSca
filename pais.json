@@ -4,6 +4,7 @@
             "package" : "br.com.teste.domain",
             "entityName": "Pais",
             "tableName": "TESTE_PAIS",
+            "service": "CRUD",
             "attributes": [
                 { 
                     "name": "nome",
