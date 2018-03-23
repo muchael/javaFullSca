@@ -6,11 +6,62 @@ Created on 08/03/2018
 @author: Newton Muchael
 '''
 
-import re
+import re, os
 import sys
 import json
 
 config = {};
+
+serviceMethods = {
+'create': """    /**
+	 * Método para inserir {entityName}
+	 *
+	 * @param {entityNameLowerCamelCase}
+	 * @return
+	 */
+	@Override
+	public {entityName} insert{entityName}( {entityName} {entityNameLowerCamelCase} )
+	{{ 
+        return this.{entityNameLowerCamelCase}Repository.save( {entityNameLowerCamelCase} );
+	}}\n
+""",
+'read': """    /**
+	 * Método para listar {entityName}
+	 *
+	 * @param {entityNameLowerCamelCase}
+	 * @return
+	 */
+	@Override
+	public {entityName} list{entityName}( String filter )
+	{{ 
+        return this.{entityNameLowerCamelCase}Repository.list{entityName}ByFilters( filter );
+	}}\n
+""",
+'update':"""    /**
+	 * Método para atualizar {entityName}
+	 *
+	 * @param {entityNameLowerCamelCase}
+	 * @return
+	 */
+	@Override
+	public {entityName} update{entityName}( {entityName} {entityNameLowerCamelCase} )
+	{{ 
+        return this.{entityNameLowerCamelCase}Repository.save( {entityNameLowerCamelCase} );
+	}}\n
+""",
+'delete':"""    /**
+	 * Método para remover {entityName}
+	 *
+	 * @param {entityNameLowerCamelCase}
+	 * @return
+	 */
+	@Override
+	public void remove{entityName}( Long id )
+	{{ 
+        return this.{entityNameLowerCamelCase}Repository.delete( id );
+	}}\n
+"""
+}
 
 def readConf( fileName ):
     with open(fileName) as json_data:
@@ -37,10 +88,13 @@ def generateAttributes( attributes ):
 
 def generateEntity( entity ):
 
-    print entity
+    directory = 'generated/' + entity['package'].replace('.', '/') + '/entity/'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     with open( 'template/entity.java', 'r' ) as file:
 
-        resultFile = open('generated/' + entity['entityName'] + '.java', 'w')
+        resultFile = open(directory + entity['entityName'] + '.java', 'w')
         for line in file:
             match = re.search(r"\{\w+\}", line);
             if match:
@@ -70,9 +124,13 @@ def generateRepositoryFields( entity ):
 
 def generateRepository( entity ):
 
+    directory = 'generated/' + entity['package'].replace('.', '/') + '/repository/'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     with open( 'template/repository.java', 'r' ) as file:
 
-        resultFile = open('generated/I' + entity['entityName'] + 'Repository.java', 'w')
+        resultFile = open( directory + 'I' + entity['entityName'] + 'Repository.java', 'w')
 
         entityNameLowerCamelCase = entity['entityName'][0].lower() + entity['entityName'][1:]
 
@@ -97,32 +155,14 @@ def generateServiceMethods( entity ):
 
     for method in entity['service']:
         if method == 'C':
-            result += """    /**
-	 * Método para inserir {entityName}
-	 *
-	 * @param {entityNameLowerCamelCase}
-	 * @return
-	 */
-	@Override
-	public {entityName} insert{entityName}( {entityName} {entityNameLowerCamelCase} )
-	{{ 
-        return this.{entityNameLowerCamelCase}Repository.save( {entityNameLowerCamelCase} );
-	}}
-"""
+            result += serviceMethods['create']
         if method == 'R':
-            result += """    /**
-	 * Método para listar {entityName}
-	 *
-	 * @param {entityNameLowerCamelCase}
-	 * @return
-	 */
-	@Override
-	public {entityName} list{entityName}( String filter )
-	{{ 
-        return this.{entityNameLowerCamelCase}Repository.list{entityName}( filter );
-	}}
-""" 
-    
+            result += serviceMethods['read']
+        if method == 'U':
+            result += serviceMethods['update']
+        if method == 'D':
+            result += serviceMethods['delete']
+
     return result.format( **entity )
 
 def generateService( entity ):
@@ -130,9 +170,14 @@ def generateService( entity ):
     if 'service' not in entity:
         return
 
+    directory = 'generated/' + entity['package'].replace('.', '/') + '/service/'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
     with open( 'template/service.java', 'r' ) as file:
 
-        resultFile = open('generated/' + entity['entityName'] + 'Service.java', 'w')
+        resultFile = open(directory + entity['entityName'] + 'Service.java', 'w')
 
         entityNameLowerCamelCase = entity['entityName'][0].lower() + entity['entityName'][1:]
 
@@ -160,8 +205,8 @@ def main():
     readConf( sys.argv[1] )
 
     for entity in config['entities']:
-        # generateEntity( entity )
-        # generateRepository( entity )
+        generateEntity( entity )
+        generateRepository( entity )
         generateService( entity )
 
 main()

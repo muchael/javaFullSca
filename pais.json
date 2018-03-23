@@ -25,6 +25,7 @@
             "package" : "br.com.teste.domain",
             "entityName": "Estado",
             "tableName": "TESTE_ESTADO",
+            "service": "R",
             "attributes": [
                 { 
                     "name": "nome",
